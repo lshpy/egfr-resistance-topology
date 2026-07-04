@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "EGFR Resistance Topology: Structural Footprints of Targeted-Therapy Resistance Mutations in the EGFR Kinase Pocket"
+abstract: >-
+  A topology-aware preliminary study quantifying how EGFR targeted-therapy
+  (osimertinib) resistance mutations mark the drug-binding pocket. Per-residue
+  structural deformation grades resistance mutations (L858R > T790M > C797S);
+  C797S is structurally near-silent because its resistance is chemical (loss of
+  the covalent anchor) rather than conformational.
+type: software
+authors:
+  - family-names: Lee
+    given-names: Seunghyun
+    orcid: "https://orcid.org/0009-0006-1926-653X"
+    affiliation: "Korea University"
+keywords:
+  - persistent homology
+  - topological data analysis
+  - EGFR
+  - drug resistance
+  - mathematical oncology
+license: MIT
