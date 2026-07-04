@@ -1,5 +1,7 @@
 # 🧬 EGFR Resistance Topology — 표적치료 내성의 구조·위상 발자국
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21193665.svg)](https://doi.org/10.5281/zenodo.21193665)
+
 폐암 EGFR 표적치료(오시머티닙)의 **내성 돌연변이**가 약물 결합 포켓에 남기는 구조·위상 발자국을 정량화하는 예비연구. 지속 호몰로지(persistent homology)와 잔기별 구조 변형으로 내성 **유형**을 구별한다.
 
 > ⚠️ 예비 연구/technical report — 임상 도구 아님. 공개 PDB 구조 기반.
@@ -46,7 +48,11 @@ python app.py             # 데모 실행
 RCSB PDB (https://www.rcsb.org) — 공개 구조. 각 PDB 원저작권은 해당 기탁자/문헌에 있음.
 
 ## 인용 / DOI
-릴리즈는 Zenodo에 아카이빙되어 DOI가 발급됩니다. (발급 후 배지 추가) · ORCID 0009-0006-1926-653X
+- **DOI (all versions):** [10.5281/zenodo.21193665](https://doi.org/10.5281/zenodo.21193665)
+- **DOI (v1.0.1):** [10.5281/zenodo.21193666](https://doi.org/10.5281/zenodo.21193666)
+- ORCID: [0009-0006-1926-653X](https://orcid.org/0009-0006-1926-653X)
+
+> Lee, S. (2026). *EGFR Resistance Topology: Structural Footprints of Targeted-Therapy Resistance Mutations in the EGFR Kinase Pocket.* Zenodo. https://doi.org/10.5281/zenodo.21193665
 
 ## 라이선스
 코드 MIT. 구조 데이터는 RCSB PDB 정책을 따름.

@@ -40,7 +40,7 @@ EGFR 활성화 돌연변이(L858R, exon19del)를 가진 비소세포폐암은 �
 같은 약물이 결합한 통제 구조에서, 잔기 국소 변형이 EGFR 표적치료 내성 돌연변이를 유형별로 짚어내되 화학적 내성(C797S)에는 원리적으로 눈이 먼다는 것을 예비적으로 보였다. 후속: 앙상블/MD 기반 위상, 공유결합·전자적 특징 결합, 다중 표적(BCR-ABL T315I, KRAS G12C)으로 확장.
 
 ## Artifacts
-Code + figures: [GitHub](https://github.com/lshpy/egfr-resistance-topology) · This note: [Zenodo DOI 발급 예정] · ORCID: 0009-0006-1926-653X
+Code + figures: [GitHub](https://github.com/lshpy/egfr-resistance-topology) · This note: [Zenodo DOI 10.5281/zenodo.21193665](https://doi.org/10.5281/zenodo.21193665) · ORCID: [0009-0006-1926-653X](https://orcid.org/0009-0006-1926-653X)
 
 ## References
 [1] Xia & Wei (2014), *Persistent homology analysis of protein structure, flexibility and folding*, Int. J. Numer. Methods Biomed. Eng.
