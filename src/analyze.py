@@ -1,11 +1,13 @@
-"""전체 분석: EGFR 오시머티닙 내성 캐스케이드의 구조·위상 신호.
+"""Full analysis: structural and topological signals of the EGFR osimertinib resistance cascade.
 
-핵심 발견:
-- 결합 포켓 backbone은 보존(Cα RMSD ~1Å)되고, 변형은 임상 돌연변이 잔기에 국소화.
-- 변형 크기가 내성 유형을 가른다: L858R(입체) ≫ T790M(입체) ≫ C797S(거의 침묵).
-- C797S의 구조적 '침묵'이 곧 발견: 오시머티닙 내성이 모양이 아니라 화학(공유앵커 소실)에서
-  오므로 구조/위상 기술이 이 유형엔 눈이 먼다 → 구조 특징과 화학 특징을 함께 써야 함.
-- 참고로 '포켓 전체'를 뭉뚱그린 위상 거리는 좌표 잡음에 묻힘(국소·해상도 적합 기술 필요).
+Key findings:
+- The binding-pocket backbone is conserved (Cα RMSD ~1 Å); deformation is localized at the clinical mutation residues.
+- Deformation magnitude separates resistance types: L858R (steric) >> T790M (steric) >> C797S (nearly silent).
+- The structural "silence" of C797S is itself the finding: osimertinib resistance comes from chemistry
+  (loss of the covalent anchor), not shape, so structural/topological descriptors are blind to this type
+  -> structural and chemical features must be used together.
+- Note: a topological distance computed over the whole pocket is buried in coordinate noise
+  (localized, resolution-appropriate descriptors are needed).
 """
 from __future__ import annotations
 
@@ -23,7 +25,7 @@ from . import topology as topo
 
 RESULTS = Path(__file__).resolve().parent.parent / "results"
 KEY = {790: "T790M\n(gatekeeper)", 797: "C797S\n(covalent anchor)", 858: "L858R\n(activation loop)"}
-# 각 돌연변이를 가장 깨끗하게 담은 구조(vs WT 6JXT)
+# Structure that most cleanly carries each mutation (vs WT 6JXT)
 SITE_STRUCT = {858: ("6JWL", "L858R"), 790: ("6JX0", "T790M"), 797: ("6LUD", "C797S")}
 
 
@@ -38,16 +40,16 @@ def run(dims=(1, 2)):
     clouds = {vid: data.pocket_cloud(vid, resnums) for vid in ids}
     dgms = {vid: topo.diagram(clouds[vid]) for vid in ids}
 
-    # --- (A) 전체 포켓 위상: 잡음 대비(정직한 방법론적 결과) ---
+    # --- (A) Whole-pocket topology vs noise (an honest methodological result) ---
     baseline = topo.noise_baseline(clouds[wt], sigma=0.4, n=20, dims=dims)
     global_dist = {vid: topo.total_wdist(dgms[wt], dgms[vid], dims) for vid in ids[1:]}
 
-    # --- (B) 잔기별 Hausdorff 변형: 국소화(WT vs 삼중변이 6LUD) ---
+    # --- (B) Per-residue Hausdorff deformation: localization (WT vs triple mutant 6LUD) ---
     haus = geo.per_residue_hausdorff("6LUD", wt, resnums)
     nonkey = [v for n, v in haus["hausdorff"].items() if n not in KEY]
     struct_background = float(np.median(nonkey))
 
-    # --- (C) 돌연변이별 자리 변형: 내성 유형 등급 ---
+    # --- (C) Per-mutation site deformation: grading resistance types ---
     site_footprint = {}
     for site, (sid, name) in SITE_STRUCT.items():
         h = geo.per_residue_hausdorff(sid, wt, resnums)
@@ -61,7 +63,7 @@ def run(dims=(1, 2)):
         "global_topology": {
             "noise_baseline": {k: baseline[k] for k in ("mean", "std", "p95")},
             "distance_from_WT": {labels[v]: global_dist[v] for v in ids[1:]},
-            "note": "전체 포켓 Wasserstein < 잡음 기준선 → 국소 기술 필요",
+            "note": "whole-pocket Wasserstein < noise baseline -> localized descriptors needed",
         },
         "localization_pocket_CA_RMSD": haus["ca_rmsd"],
         "structural_background_hausdorff_median": struct_background,
@@ -134,13 +136,13 @@ def _fig_persistence(dgms, labels, ids):
 
 if __name__ == "__main__":
     r = run()
-    print("=== 국소화: 포켓 Cα RMSD (WT vs 6LUD) = %.2f Å ===" % r["localization_pocket_CA_RMSD"])
-    print("구조적 배경(비돌연변이 잔기 Hausdorff 중앙값) = %.2f Å" % r["structural_background_hausdorff_median"])
-    print("=== 돌연변이별 자리 변형(내성 유형 등급) ===")
+    print("=== Localization: pocket Cα RMSD (WT vs 6LUD) = %.2f Å ===" % r["localization_pocket_CA_RMSD"])
+    print("Structural background (median Hausdorff of non-mutated residues) = %.2f Å" % r["structural_background_hausdorff_median"])
+    print("=== Per-mutation site deformation (resistance-type grading) ===")
     for name in ["L858R", "T790M", "C797S"]:
         f = r["site_footprint"][name]
         print(f"  {name} (res {f['site']}, {f['struct']}): {f['hausdorff']:.2f} Å")
-    print("=== 전체 포켓 위상 vs 잡음(정직한 방법론 결과) ===")
+    print("=== Whole-pocket topology vs noise (honest methodological result) ===")
     b = r["global_topology"]["noise_baseline"]
     print(f"  noise p95 = {b['p95']:.1f}")
     for lab, d in r["global_topology"]["distance_from_WT"].items():

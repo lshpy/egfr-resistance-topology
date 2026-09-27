@@ -1,7 +1,7 @@
-"""설명 가능한 EGFR 내성 구조 분석 데모 (Gradio).
+"""Explainable EGFR resistance structure analysis demo (Gradio).
 
-돌연변이를 고르면, 그 돌연변이가 오시머티닙 결합 포켓에 남기는
-구조적 발자국(Hausdorff)과 포켓 위상 다이어그램, 그리고 '입체 vs 화학' 해석을 보여준다.
+Pick a mutation to see the structural footprint (Hausdorff) it leaves in the osimertinib binding pocket,
+the pocket persistence diagram, and a "steric vs chemical" interpretation.
 """
 from __future__ import annotations
 
@@ -17,15 +17,15 @@ from src import topology as topo
 
 WT = "6JXT"
 CHOICES = {
-    "L858R (활성화 루프, 민감화)": ("6JWL", 858),
-    "T790M (게이트키퍼, 1·2세대 내성)": ("6JX0", 790),
-    "L858R/T790M/C797S (오시머티닙 내성)": ("6LUD", 797),
+    "L858R (activation loop, sensitizing)": ("6JWL", 858),
+    "T790M (gatekeeper, 1st/2nd-gen resistance)": ("6JX0", 790),
+    "L858R/T790M/C797S (osimertinib resistance)": ("6LUD", 797),
 }
 _resnums = data.pocket_residue_numbers()
 _INTERP = {
-    790: ("입체(steric)", "게이트키퍼 Thr→Met로 곁사슬이 커져 약물 결합 자리가 좁아진다. 구조 변화가 뚜렷해 구조/위상 기술로 감지된다."),
-    858: ("입체(steric)", "활성화 루프 Leu→Arg로 크고 하전된 곁사슬이 들어와 큰 구조 재배열을 만든다. 발자국이 가장 크다."),
-    797: ("화학(chemical)", "Cys→Ser는 거의 같은 부피(isosteric)라 모양이 거의 안 바뀐다. 오시머티닙이 C797과 맺던 공유결합 앵커가 사라져 내성이 생기며, 이 유형은 구조/위상만으로는 보이지 않는다."),
+    790: ("steric", "The gatekeeper Thr→Met substitution enlarges the side chain and narrows the drug-binding site. The structural change is clear, so structural/topological descriptors detect it."),
+    858: ("steric", "The activation-loop Leu→Arg substitution introduces a large, charged side chain that causes a major structural rearrangement. It has the largest footprint."),
+    797: ("chemical", "Cys→Ser is nearly isosteric, so the shape barely changes. Resistance arises because the covalent anchor osimertinib forms with C797 is lost; this type is invisible to structure/topology alone."),
 }
 
 
@@ -49,28 +49,28 @@ def analyze(choice):
     ax.set_xlabel("birth"); ax.set_ylabel("death"); ax.set_title("Pocket H1 persistence"); ax.legend()
     fig.tight_layout()
 
-    verdict = "구조로 감지됨 ✅" if fp > background else "구조적으로 침묵 — 화학적 내성 ⚠️"
+    verdict = "detected structurally ✅" if fp > background else "structurally silent — chemical resistance ⚠️"
     md = (
         f"## {choice}\n"
-        f"- 돌연변이 자리(res {site}) 구조 발자국: **{fp:.2f} Å**\n"
-        f"- 포켓 구조적 배경(중앙값): {background:.2f} Å → **{verdict}**\n"
-        f"- 내성 유형: **{kind}**\n\n"
+        f"- Structural footprint at the mutation site (res {site}): **{fp:.2f} Å**\n"
+        f"- Pocket structural background (median): {background:.2f} Å → **{verdict}**\n"
+        f"- Resistance type: **{kind}**\n\n"
         f"> {why}\n\n"
-        f"> 구조 PDB: {struct_id} (오시머티닙 결합) · WT: {WT}. "
-        f"예비·비임상 연구 데모입니다."
+        f"> Structure PDB: {struct_id} (osimertinib-bound) · WT: {WT}. "
+        f"Preliminary, non-clinical research demo."
     )
     return md, fig
 
 
-with gr.Blocks(title="EGFR 내성 구조·위상 분석") as demo:
+with gr.Blocks(title="EGFR resistance structure & topology analysis") as demo:
     gr.Markdown(
-        "# 🧬 설명 가능한 EGFR 표적치료 내성 분석\n"
-        "폐암 EGFR 표적치료(오시머티닙)의 내성 돌연변이가 결합 포켓에 남기는 "
-        "**구조적 발자국**과 **포켓 위상**을 정량화합니다. 같은 약물이 결합한 구조들만 비교해 "
-        "리간드 교란을 통제했습니다. (공개 PDB·지속 호몰로지·예비연구)"
+        "# 🧬 Explainable EGFR targeted-therapy resistance analysis\n"
+        "Quantifies the **structural footprint** and **pocket topology** that resistance mutations to "
+        "EGFR targeted therapy in lung cancer (osimertinib) leave in the binding pocket. Only structures bound "
+        "to the same drug are compared, controlling for ligand confounding. (Public PDB · persistent homology · preliminary study)"
     )
-    choice = gr.Radio(list(CHOICES), value=list(CHOICES)[2], label="내성 돌연변이 선택")
-    btn = gr.Button("구조·위상 분석", variant="primary")
+    choice = gr.Radio(list(CHOICES), value=list(CHOICES)[2], label="Select resistance mutation")
+    btn = gr.Button("Analyze structure & topology", variant="primary")
     out_md = gr.Markdown()
     out_fig = gr.Plot()
     btn.click(analyze, choice, [out_md, out_fig])

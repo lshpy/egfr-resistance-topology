@@ -1,12 +1,12 @@
-"""EGFR 내성 캐스케이드 후보 PDB 구조의 실제 상태를 프로그램으로 판별.
-각 구조에서 결합 리간드(HETATM)와 키 잔기(790/797/858) 정체를 읽는다.
+"""Programmatically determine the actual state of candidate PDB structures for the EGFR resistance cascade.
+Reads the bound ligand (HETATM) and the identity of key residues (790/797/858) in each structure.
 """
 import warnings, urllib.request, os
 warnings.filterwarnings("ignore")
 from Bio.PDB import PDBParser
 
 CANDIDATES = [
-    # (추정 상태, PDB ID)
+    # (assumed state, PDB ID)
     ("WT/erlotinib", "1M17"), ("WT/lapatinib", "1XKK"), ("WT/gefitinib", "2ITY"),
     ("WT/gefitinib", "2ITZ"), ("WT/AEE788", "2ITX"), ("WT", "2J6M"),
     ("WT/TAK285", "3POZ"), ("WT", "4LQM"), ("WT/afatinib", "4G5J"),
@@ -39,7 +39,7 @@ for state, pid in CANDIDATES:
         s = parser.get_structure(pid, path)
         reso = s.header.get("resolution")
         model = s[0]
-        # 첫 폴리펩타이드 체인
+        # first polypeptide chain
         chain = None
         for ch in model:
             if any(r.id[0] == " " for r in ch):

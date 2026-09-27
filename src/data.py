@@ -1,10 +1,10 @@
-"""EGFR 키나아제 도메인 구조 — 오시머티닙 내성 캐스케이드.
+"""EGFR kinase-domain structures: the osimertinib resistance cascade.
 
-같은 약물(osimertinib, 리간드 YY3)이 결합한 채 유전형만 다른 구조들을 사용해
-'리간드 유도적합' 교란을 통제한다. 지속 호몰로지는 강체운동에 불변이므로
-중첩 없이도 결합 포켓의 위상을 비교할 수 있다.
+Uses structures bound to the same drug (osimertinib, ligand YY3) that differ only in genotype,
+to control for ligand-induced-fit confounding. Persistent homology is invariant to rigid motion,
+so binding-pocket topology can be compared without superposition.
 
-출처: RCSB PDB (https://www.rcsb.org). 공개 구조.
+Source: RCSB PDB (https://www.rcsb.org). Public structures.
 """
 from __future__ import annotations
 
@@ -20,26 +20,26 @@ from Bio.PDB import PDBParser  # noqa: E402
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "pdb"
 
-# 오시머티닙(YY3) 결합 캐스케이드 — 임상 순서: WT → 민감화 → 게이트키퍼 → 공유앵커 소실
+# Osimertinib (YY3)-bound cascade, in clinical order: WT -> sensitizing -> gatekeeper -> loss of covalent anchor
 OSIMERTINIB_SERIES = [
-    {"id": "6JXT", "label": "WT", "mutations": [], "role": "야생형(약물 결합)"},
-    {"id": "6JWL", "label": "L858R", "mutations": ["L858R"], "role": "민감화 돌연변이"},
-    {"id": "6JX0", "label": "T790M", "mutations": ["T790M"], "role": "게이트키퍼(1·2세대 내성)"},
+    {"id": "6JXT", "label": "WT", "mutations": [], "role": "wild type (drug-bound)"},
+    {"id": "6JWL", "label": "L858R", "mutations": ["L858R"], "role": "sensitizing mutation"},
+    {"id": "6JX0", "label": "T790M", "mutations": ["T790M"], "role": "gatekeeper (1st/2nd-gen resistance)"},
     {"id": "6LUD", "label": "L858R/T790M/C797S", "mutations": ["L858R", "T790M", "C797S"],
-     "role": "★오시머티닙 내성(공유앵커 C797 소실)"},
+     "role": "★osimertinib resistance (loss of covalent anchor C797)"},
 ]
-# 1세대(gefitinib, IRE) 통제쌍 — 보조 분석(게이트키퍼 내성)
+# 1st-generation (gefitinib, IRE) control pair: auxiliary analysis (gatekeeper resistance)
 GEFITINIB_SERIES = [
-    {"id": "2ITY", "label": "WT", "mutations": [], "role": "야생형(gefitinib)"},
-    {"id": "4I22", "label": "L858R/T790M", "mutations": ["L858R", "T790M"], "role": "게이트키퍼 내성(gefitinib)"},
+    {"id": "2ITY", "label": "WT", "mutations": [], "role": "wild type (gefitinib)"},
+    {"id": "4I22", "label": "L858R/T790M", "mutations": ["L858R", "T790M"], "role": "gatekeeper resistance (gefitinib)"},
 ]
 
 LIGAND = {"6JXT": "YY3", "6JWL": "YY3", "6JX0": "YY3", "6LUD": "YY3",
           "2ITY": "IRE", "4I22": "IRE"}
 
-# 결합 포켓을 정의하는 기준 구조/컷오프
+# Reference structure / cutoff that define the binding pocket
 POCKET_REFERENCE = "6JXT"
-POCKET_CUTOFF = 8.0  # Å, 리간드 원자로부터
+POCKET_CUTOFF = 8.0  # Å, from ligand atoms
 
 _SKIP_HET = {"HOH", "NAG", "SO4", "GOL", "EDO", "CL", "NA", "MG", "ACT", "PO4", "MES", "NO3"}
 _parser = PDBParser(QUIET=True)
@@ -73,7 +73,7 @@ def ligand_atoms(chain, pdb_id: str):
 
 
 def pocket_residue_numbers() -> list[int]:
-    """WT 기준 구조에서 리간드 8Å 이내 잔기 번호(고정 포켓 정의)."""
+    """Residue numbers within 8 Å of the ligand in the WT reference structure (fixed pocket definition)."""
     chain = load_chain(POCKET_REFERENCE)
     lig_xyz = np.array([a.coord for a in ligand_atoms(chain, POCKET_REFERENCE)])
     nums = set()
@@ -90,7 +90,7 @@ def pocket_residue_numbers() -> list[int]:
 
 
 def pocket_atoms_by_residue(pdb_id: str, resnums: list[int]) -> dict[int, np.ndarray]:
-    """잔기번호 → 그 잔기 중원자 좌표(N,3). 고정 포켓 잔기집합을 모든 구조에 적용."""
+    """Residue number -> heavy-atom coordinates (N,3) of that residue. The fixed pocket residue set is applied to every structure."""
     chain = load_chain(pdb_id)
     wanted = set(resnums)
     out: dict[int, np.ndarray] = {}
